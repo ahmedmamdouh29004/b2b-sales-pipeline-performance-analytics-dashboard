@@ -261,8 +261,24 @@ year_established → Null
 sector           → Unassigned
 revenue          → 0
 ```
+## 🧩 Data Quality Issue: Unknown Accounts Handling
 
+During data modeling, 12% of accounts were found to have missing or incomplete references in the sales pipeline, mainly appearing in early pipeline stages (Prospecting & Engaging).
+
+To maintain data integrity and avoid breaking relationships in the Star Schema model, a dedicated "Unknown Account" entity was introduced in the accounts dimension.
+
+This ensures all records remain traceable and correctly visualized across all reports instead of being dropped or ignored.
 ---
+### ⚠️ Unknown Account Handling
+
+To handle missing account mappings in the fact table, a placeholder dimension record was created:
+
+- employees        → 0  
+- office_location  → Unknown  
+- subsidiary_of    → Unknown  
+- year_established → Null  
+- sector           → Unassigned  
+- revenue          → 0  
 
 ## 📊 DAX Measures
 
