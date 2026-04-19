@@ -1,6 +1,5 @@
-# CRM Sales Performance Dashboard  
-### B2B Sales Pipeline Analysis | Power BI | Maven Analytics Dataset  
-
+# B2B Sales Pipeline & Performance Analytics Dashboard
+### Power BI | CRM Analytics | Maven Analytics Dataset
 ---
 
 ## 📋 Project Overview
