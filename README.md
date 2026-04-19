@@ -1,15 +1,39 @@
-# CRM Sales Performance Dashboard
-### B2B Sales Pipeline Analysis | Power BI | Maven Analytics Dataset
+# CRM Sales Performance Dashboard  
+### B2B Sales Pipeline Analysis | Power BI | Maven Analytics Dataset  
 
 ---
 
 ## 📋 Project Overview
 
+A business intelligence dashboard that analyzes **8,800+ B2B sales opportunities** to uncover performance drivers, revenue concentration risks, and product strategy insights — enabling data-driven decision-making across sales teams.
+
 A comprehensive 6-page Power BI dashboard analyzing **8,800 B2B sales opportunities** from a fictitious computer hardware company. The project covers sales team performance, agent efficiency, quarterly trends, product strategy, and account intelligence — built on a clean Star Schema data model with 15+ custom DAX measures.
 
 > **Data Source:** [Maven Analytics — CRM Sales Opportunities Dataset](https://mavenanalytics.io)  
 > **Tool:** Power BI Desktop  
-> **Domain:** B2B Sales | CRM | Computer Hardware
+> **Domain:** B2B Sales | CRM | Computer Hardware  
+
+---
+
+## 🎥 Live Demo
+
+👉 **Video Walkthrough:**  
+https://vimeo.com/1182645961?share=copy&fl=sv&fe=ci  
+
+---
+
+## 📸 Dashboard Preview
+
+| Landing Page | Sales Trends | Account Intelligence |
+|--------------|--------------|---------------------|
+| ![Landing](screenshots/00_landing_overview.jpeg) | ![Trends](screenshots/02_sales_trends_performance.jpeg) | ![Accounts](screenshots/06_account_intelligence.jpeg) |
+
+---
+
+## 📄 Full Documentation
+
+👉 **Detailed Project Documentation:**  
+B2B_Sales_Pipeline_Documentation  
 
 ---
 
@@ -34,8 +58,6 @@ A comprehensive 6-page Power BI dashboard analyzing **8,800 B2B sales opportunit
 - **June** is the peak month ($1.34M), while **July** is the weakest ($700K)
 - **Q2 achieved peak revenue ($3.1M)** despite a sharp Win Rate drop — volume, not efficiency, drove it
 - **Technology sector** shows the best balance between Revenue and Win Rate
-
----
 
 ---
 
@@ -162,19 +184,19 @@ All product series show an identical Win Rate pattern: **Q1 ~82-83%** dropping t
 | GTK | 100% | 64% | 67% | 43% |
 
 **What this means:**  
-The Win Rate drop was **not product-specific** — it happened across all series simultaneously. This rules out product quality or pricing as the cause. The Q2 pipeline flood was driven by a company-wide push (possibly a sales campaign or quota pressure), not by individual product or market dynamics.
+The Win Rate drop was **not product-specific** — it happened across all series simultaneously. This rules out product quality or pricing as the cause. The Q2 pipeline flood was driven by a company-wide push.
 
 **Action:**  
 → Q1 benchmarks should be the target — 82% Win Rate is achievable.  
 → Any future pipeline expansion should be paired with quality controls.  
-→ GTK's Q4 collapse (43%) warrants separate investigation — it diverges from GTX/MG stability.
+→ GTK's Q4 collapse (43%) warrants separate investigation.
 
 ---
 
 ### 📌 Insight 7 — Team Size Doesn't Predict Revenue; Efficiency Does
 
 **Finding:**  
-All 6 managers lead exactly **5 agents each**. Yet revenue per agent varies by **2x between the best and worst manager**.
+All 6 managers lead exactly **5 agents each**. Yet revenue per agent varies significantly.
 
 | Manager | Revenue | Win Rate | Rev / Agent |
 |---------|---------|----------|------------|
@@ -184,14 +206,13 @@ All 6 managers lead exactly **5 agents each**. Yet revenue per agent varies by *
 | Dustin Brinkmann | $1.09M | 63.0% | **$219K** |
 
 **The paradox:**  
-Cara Losch has the **highest Win Rate (64.4%)** but the **lowest revenue per agent ($226K)**. Melvin has the **highest revenue** but **below-average Win Rate (62.2%)**.  
-This suggests Cara's team wins deals efficiently but works on smaller deal sizes — while Melvin's team chases larger deals and accepts more losses.
+Cara Losch has the **highest Win Rate (64.4%)** but the **lowest revenue per agent ($226K)**. This suggests high efficiency but low deal size.
 
 **Action:**  
-→ Cara's team needs larger deal opportunities — their conversion efficiency is proven.  
-→ Melvin's team needs Win Rate coaching — they have the pipeline volume, not the close quality.
+→ Increase deal size exposure for high-efficiency teams.  
+→ Improve Win Rate for high-revenue teams.
 
-
+---
 
 ## 🗄️ Data Model
 
@@ -204,617 +225,17 @@ sales_teams_dim ──(1)──(*) ──┤
 DateTable       ──(1)──(*) ──┘
 ```
 
-### Tables
-
-| Table | Rows | Key Column | Role |
-|-------|------|-----------|------|
-| sales_pipeline | 8,800 | opportunity_id | Fact Table |
-| accounts_dim | 85 | account | Dimension |
-| products_dim | 7 | product | Dimension |
-| sales_teams_dim | 35 | sales_agent | Dimension |
-| DateTable | Dynamic | Date | Date Dimension |
-
-### Date Table (DAX)
-```dax
-DateTable = 
-ADDCOLUMNS(
-    CALENDAR(
-        MIN(sales_pipeline[engage_date]),   -- earliest deal start
-        MAX(sales_pipeline[close_date])     -- latest deal close
-    ),
-    "Year",           YEAR([Date]),
-    "Month Number",   MONTH([Date]),
-    "Month Name",     FORMAT([Date], "MMMM"),
-    "Quarter",        "Q" & FORMAT([Date], "Q"),
-    "QuarterYear",    "Q" & FORMAT([Date], "Q") & " " & YEAR([Date]),
-    "Day",            DAY([Date]),
-    "Weekday Number", WEEKDAY([Date], 1),
-    "Weekday Name",   FORMAT([Date], "dddd")
-)
-```
-
-> **Important:** After creating the table, go to **Table Tools → Mark as Date Table → select [Date] column**. Required for Time Intelligence functions (PREVIOUSQUARTER, SAMEPERIODLASTYEAR, etc.) to work correctly.
-
-**Why MIN(engage_date) and MAX(close_date)?**
-- `engage_date` = deal start date (earliest = 2016)
-- `close_date` = deal close date (latest = 2017)
-- This ensures the calendar covers the **full lifecycle** of every deal
-
 ---
-
-## ⚠️ Data Limitations & Quality Notes
-
-| Issue | Detail | Handling |
-|-------|--------|----------|
-| Lost deal values | All Lost deals have close_value = $0 | Used Deal Count instead of Lost Revenue |
-| GTXPro price | sales_price = $0 in source data | Noted as data gap |
-| Account nulls | 12% of accounts have incomplete data | Created "Unknown" member in dimension |
-| Engaging nulls | Some Engaging deals missing account info | Flagged as data quality issue |
-| Single year | Data covers 2017 only | YoY analysis unavailable |
-
-### Unknown Account Handling
-```
-employees        → 0
-office_location  → Unknown
-subsidiary_of    → Unknown
-year_established → Null
-sector           → Unassigned
-revenue          → 0
-```
-## 🧩 Data Quality Issue: Unknown Accounts Handling
-
-During data modeling, 12% of accounts were found to have missing or incomplete references in the sales pipeline, mainly appearing in early pipeline stages (Prospecting & Engaging).
-
-To maintain data integrity and avoid breaking relationships in the Star Schema model, a dedicated "Unknown Account" entity was introduced in the accounts dimension.
-
-This ensures all records remain traceable and correctly visualized across all reports instead of being dropped or ignored.
----
-### ⚠️ Unknown Account Handling
-
-To handle missing account mappings in the fact table, a placeholder dimension record was created:
-
-- employees        → 0  
-- office_location  → Unknown  
-- subsidiary_of    → Unknown  
-- year_established → Null  
-- sector           → Unassigned  
-- revenue          → 0  
-
-## 📊 DAX Measures
-
-### Core Measures
-```dax
-Total Revenue = 
-CALCULATE(
-    SUM(sales_pipeline[close_value]),
-    sales_pipeline[Deal Stage] = "Won"
-)
-
-Won Deals = 
-CALCULATE(
-    COUNTROWS(sales_pipeline),
-    sales_pipeline[Deal Stage] = "Won"
-)
-
-Lost Deals = 
-CALCULATE(
-    COUNTROWS(sales_pipeline),
-    sales_pipeline[Deal Stage] = "Lost"
-)
-
-Total Deals = COUNTROWS(sales_pipeline)
-
-Open Opportunities = 
-CALCULATE(
-    COUNTROWS(sales_pipeline),
-    sales_pipeline[Deal Stage] IN {"Engaging", "Prospecting"}
-)
-
-Total Pipeline Value = SUM(sales_pipeline[close_value])
--- Note: Includes ALL stages (Won + Lost + Open)
-```
-
-### Win Rate Measures
-```dax
-Win Rate % = 
-DIVIDE([Won Deals], [Won Deals] + [Lost Deals], 0)
-
-Lost Rate % = 
-DIVIDE([Lost Deals], [Won Deals] + [Lost Deals], 0)
-
-Win Rate vs Avg = 
-[Win Rate %] - 
-CALCULATE([Win Rate %], ALL(sales_teams_dim))
-
-Overall Win Rate = 
-CALCULATE([Win Rate %], ALL(sales_teams_dim))
-```
-
-### Performance Measures
-```dax
-Avg Deal Size = 
-CALCULATE(
-    AVERAGE(sales_pipeline[close_value]),
-    sales_pipeline[deal_stage] = "Won"
-)
-
-Avg Close Time = 
-CALCULATE(
-    AVERAGEX(
-        FILTER(sales_pipeline, sales_pipeline[deal_stage] = "Won"),
-        DATEDIFF(sales_pipeline[engage_date], sales_pipeline[close_date], DAY)
-    )
-)
-
-Revenue per Day = 
-DIVIDE([Total Revenue], [Avg Close Time], 0)
-
-Revenue Contribution % = 
-DIVIDE(
-    [Total Revenue],
-    CALCULATE([Total Revenue], ALL(products_dim)),
-    0
-)
-
-Open % = 
-DIVIDE(
-    CALCULATE(COUNTROWS(sales_pipeline),
-              sales_pipeline[deal_stage] IN {"Engaging", "Prospecting"}),
-    CALCULATE(COUNTROWS(sales_pipeline), ALL(sales_pipeline[deal_stage])),
-    0
-)
-```
-
-### Time Intelligence
-```dax
-Revenue PQ = 
-CALCULATE([Total Revenue], PREVIOUSQUARTER(DateTable[Date]))
-
-QoQ Growth % = 
-VAR CurrentQ = [Total Revenue]
-VAR PreviousQ = [Revenue PQ]
-RETURN DIVIDE(CurrentQ - PreviousQ, PreviousQ, 0)
-```
-
-### Dynamic UX Measures (ISINSCOPE Pattern)
-
-These measures use `ISINSCOPE` to show individual values at agent level and averages at the total row — used in Agent Performance Matrix.
-
-```dax
-Win Rate (Dynamic) = 
-IF(
-    ISINSCOPE(sales_pipeline[sales_agent]),
-    [Win Rate %],
-    AVERAGEX(VALUES(sales_pipeline[sales_agent]), [Win Rate %])
-)
-
-Revenue (Dynamic) = 
-IF(
-    ISINSCOPE(sales_pipeline[sales_agent]),
-    [Total Revenue],
-    [Avg Revenue per Agent]
-)
-
-Deals (Dynamic) = 
-IF(
-    ISINSCOPE(sales_pipeline[sales_agent]),
-    [Total Deals],
-    AVERAGEX(VALUES(sales_pipeline[sales_agent]), [Total Deals])
-)
-
-Won Deals (Dynamic) = 
-IF(
-    ISINSCOPE(sales_pipeline[sales_agent]),
-    [Won Deals],
-    AVERAGEX(VALUES(sales_pipeline[sales_agent]), [Won Deals])
-)
-```
-
-### Ranking & Dynamic Labels
-```dax
-Agent Rank = 
-RANKX(
-    ALL(sales_pipeline[sales_agent]),
-    [Total Revenue],
-    , DESC, DENSE
-)
-
-Selected Manager Title = 
-IF(
-    HASONEVALUE(sales_teams_dim[Manager]),
-    SELECTEDVALUE(sales_teams_dim[Manager]) & "'s Team Performance",
-    "Sales Agents Performance Overview"
-)
-```
-
-### Segmentation Measures
-```dax
-Product Category = 
-VAR Rev = [Total Revenue]
-VAR AvgRev = [Product Average Revenue]
-VAR WR = [Win Rate %]
-RETURN
-SWITCH(
-    TRUE(),
-    Rev >= AvgRev && WR >= [Product Avg Win Rate], "⭐ Star",
-    Rev < AvgRev && WR >= [Product Avg Win Rate], "💎 Opportunity",
-    Rev >= AvgRev && WR < [Product Avg Win Rate], "🔴 Risk",
-    Rev < AvgRev && WR < [Product Avg Win Rate], "⚠️ Weak"
-)
-
-Account Category = 
-VAR Rev = [Total Revenue]
-VAR AvgRev = AVERAGEX(ALL(accounts_dim[account]), [Total Revenue])
-VAR WR = [Win Rate %]
-VAR AvgWR = AVERAGEX(ALL(accounts_dim[account]), [Win Rate %])
-RETURN
-SWITCH(
-    TRUE(),
-    Rev >= AvgRev && WR >= AvgWR, "⭐ Star",
-    Rev < AvgRev && WR >= AvgWR, "💎 Opportunity",
-    Rev >= AvgRev && WR < AvgWR, "🔴 Risk",
-    "⚠️ Weak"
-)
-```
-
-### Dynamic Manager Cards
-```dax
-Top Revenue Manager = 
-VAR T = ADDCOLUMNS(VALUES(sales_teams_dim[Manager]),
-        "R", CALCULATE([Total Revenue]))
-RETURN CONCATENATEX(TOPN(1, T, [R], DESC), sales_teams_dim[Manager], "")
-
-Lowest Revenue Manager = 
-VAR T = ADDCOLUMNS(VALUES(sales_teams_dim[Manager]),
-        "R", CALCULATE([Total Revenue]))
-RETURN CONCATENATEX(TOPN(1, T, [R], ASC), sales_teams_dim[Manager], "")
-
-Most Active Manager = 
-VAR T = ADDCOLUMNS(VALUES(sales_teams_dim[Manager]),
-        "D", CALCULATE([Deal Count]))
-RETURN CONCATENATEX(TOPN(1, T, [D], DESC), sales_teams_dim[Manager], "")
-
-Least Active Manager = 
-VAR T = ADDCOLUMNS(VALUES(sales_teams_dim[Manager]),
-        "D", CALCULATE([Deal Count]))
-RETURN CONCATENATEX(TOPN(1, T, [D], ASC), sales_teams_dim[Manager], "")
-```
-
----
-
-## 📄 Dashboard Pages
-
----
-
-### Page 0 — Landing Page
-
-**Purpose:** Project introduction and navigation hub
-
-**Content:**
-- Project title & description
-- Dataset stats (8,800 opportunities, 30 agents, 85 accounts)
-- 4 Business questions
-- Key findings (5 bullet insights)
-- Data model summary (Star Schema)
-- Tools & techniques used
-- Data limitations
-- Page navigation buttons
-
----
-
-### Page 1 — Executive Overview
-
-**Business Question:** What is the overall health of our sales pipeline?
-
-**Audience:** CEO, Sales Director
-
-**Filters:** Date Range | Sector | Region
-
-**KPI Cards:**
-| Card | Value |
-|------|-------|
-| Total Revenue | $10.01M |
-| Open Opportunities | 2,089 |
-| Win Rate % | 63.15% |
-| Lost Rate % | 36.85% |
-
-**Visuals:**
-
-| Visual | Type | X-Axis / Category | Y-Axis / Values | Key Insight |
-|--------|------|-------------------|-----------------|-------------|
-| Revenue by Account | Bar Chart | accounts_dim[account] | [Total Revenue] | Top: Kan-code $0.34M |
-| Revenue by Sector | Bar Chart | accounts_dim[sector] | [Total Revenue] | Top: Retail $1.87M |
-| Regional Performance | Bar Chart | regional_office | [Total Revenue] | West $3.57M |
-| Deal Stage Distribution | Donut Chart | deal_stage (Legend) | Count of opportunity_id | Won 48.16% |
-
-**Tooltip — Revenue by Account:**
-```
-Account Name | Sector | Total Revenue | Win Rate % | Deal Count
-```
-
-**Tooltip — Revenue by Sector:**
-```
-Sector | Total Revenue | Win Rate % | Number of Accounts
-```
-
----
-
-### Page 2 — Team & Manager Performance
-
-**Business Question:** What separates top-performing teams from the rest?
-
-**Audience:** Sales Director, VP of Sales
-
-**Filters:** Date Range | Region | Manager
-
-**KPI Cards:**
-| Card | Value |
-|------|-------|
-| Top Revenue Manager | Melvin Marxen |
-| Lowest Revenue Manager | Dustin Brinkmann |
-| Most Active Manager | Melvin Marxen |
-| Least Active Manager | Cara Losch |
-
-**Visuals:**
-
-| Visual | Type | Details | Key Insight |
-|--------|------|---------|-------------|
-| Revenue vs Efficiency | Scatter Plot | X: Revenue, Y: Win Rate%, Size: Deals, Legend: Manager + Avg Lines | Summer = most efficient |
-| Deal Pipeline Distribution | Stacked Bar 100% | Y: Manager, Legend: deal_stage | Win/Loss ratio per manager |
-| Revenue Mix by Manager & Product | Stacked Column | X: Manager, Legend: Series | GTK = Celia only |
-| Win Rate vs Company Average | Bar Chart | Y: Manager, X: [Win Rate vs Avg] | Diverging colors |
-
-**Drillthrough:** Right-click Manager → Agent Performance Page
-
-**Scatter Plot Avg Lines:**
-- Horizontal line: Overall Win Rate = 63.2%
-- Vertical line: Avg Manager Revenue
-
-**Tooltip — Scatter:**
-```
-Manager | Total Revenue | Win Rate % | Deal Count | Avg Deal Size | Avg Close Time
-```
-
-**Tooltip — Stacked Bar:**
-```
-Manager | Deal Stage | Count | % of Row Total
-```
-
----
-
-### Page 3 — Agent Performance
-
-**Business Question:** Which agents are underperforming — and why?
-
-**Audience:** Sales Manager, Team Lead
-
-**Filters:** Date Range | Region | Sector | Account | Manager | Deal Stage
-
-**Navigation:** Drillthrough from Page 2 | "All Agents" button → resets filter
-
-**Dynamic Title:**
-```dax
-IF(HASONEVALUE(sales_teams_dim[Manager]),
-   SELECTEDVALUE(sales_teams_dim[Manager]) & "'s Team Performance",
-   "Sales Agents Performance Overview")
-```
-
-**Visuals:**
-
-| Visual | Type | Details |
-|--------|------|---------|
-| Revenue vs Win Rate | Scatter Plot | X: Revenue, Y: Win Rate%, Size: Deals, Legend: Agent + Avg Lines |
-| Agent Scorecard | Matrix | See columns below |
-
-**Matrix Columns:**
-| Column | Enhancement |
-|--------|-------------|
-| Rank | Plain number |
-| Agent Name | Row label |
-| Total Revenue | Data Bars |
-| Total Deals | Plain number |
-| Win Rate % | Icon (🟢🟡🔴) based on vs Average |
-| Avg Close Time | Plain number |
-| Avg Deal Size | Plain number |
-| Revenue Trend Q1→Q4 | Sparkline |
-
-**Win Rate Icon Rules:**
-```
-≥ +0% vs Average    → 🟢 Green
-≥ -5% and < 0%      → 🟡 Yellow  
-< -5% vs Average    → 🔴 Red
-```
-
-**Key Insight from Data:**
-- Lajuana Vencill: Win Rate 55% (–8.2% vs avg) → Lowest performer
-- Darcel Schlecht: $1.15M revenue, Rank #1
-
----
-
-### Page 4 — Sales Trends & Performance Drivers
-
-**Business Question:** How did sales momentum shift across quarters?
-
-**Audience:** Sales Director, Strategy Team
-
-**Filters:** Date Range | Region
-
-**Visuals:**
-
-| Visual | Type | X-Axis | Y-Axis | Key Insight |
-|--------|------|--------|--------|-------------|
-| Monthly Revenue Trend | Line Chart | MonthName | [Total Revenue] + Avg Line | Peak: June $1.34M |
-| QoQ Revenue Change | Waterfall Chart | QuarterYear | [QoQ Growth %] | Q1→Q2 +172% |
-| Win Rate Trend by Series | Line Chart | QuarterYear | [Win Rate %] | GTK volatile |
-| Quarterly Revenue Comparison | Column Chart | QuarterYear | [Total Revenue] | Q2 peak $3.1M |
-| Win vs Lost Ratio | Stacked Column 100% | QuarterYear | Won + Lost % | Q1 best 82% |
-
-**Tooltip — Monthly Trend:**
-```
-Month | Total Revenue | Won Deals | Win Rate % | Avg Close Time
-```
-
-**Tooltip — Waterfall QoQ:**
-```
-Quarter | QoQ Growth % | Total Revenue | Won Deals
-```
-
-**Insight Box (built into page):**
-> *"Q2 achieved peak revenue ($3.1M) despite a sharp drop in win rate from Q1, indicating that deal volume — not conversion efficiency — drove performance. Revenue declined in Q3 and Q4 despite stable win rates, suggesting weaker pipeline activity."*
-
-**Key Numbers:**
-| Quarter | Revenue | Win Rate |
-|---------|---------|----------|
-| Q1 2017 | $1.1M | 82.07% |
-| Q2 2017 | $3.1M | 61.7% |
-| Q3 2017 | $2.98M | 61.4% |
-| Q4 2017 | $2.8M | 60.25% |
-
----
-
-### Page 5 — Product Strategy & Performance
-
-**Business Question:** Which products drive the highest win rates and where should we focus?
-
-**Audience:** Product Manager, Sales Director
-
-**Filters:** Date Range | Series Slicer | Product Slicer | Region
-
-**Visuals:**
-
-| Visual | Type | Details | Key Insight |
-|--------|------|---------|-------------|
-| Product Performance Matrix | Scatter Plot | X: Revenue, Y: Win Rate%, Size: Deals, Legend: Series + Avg Lines | 4 Quadrants |
-| Revenue by Region & Product | Decomposition Tree | Analyze: Revenue, Explain by: Region → Series → Product | Drill-down |
-| Revenue Contribution vs Win Rate | Clustered Bar | Manager + [Revenue Contribution %] + [Win Rate %] | MG Special 0.4% contribution |
-| Product Scorecard | Matrix | See columns below | Full comparison |
-
-**Matrix Columns:**
-| Column | Enhancement |
-|--------|-------------|
-| Product | Row label |
-| Product Category | ⭐💎🔴⚠️ icon |
-| Total Revenue | Data Bars |
-| Win Rate % | Color Scale |
-| Total Deals | Plain |
-| Sales Price | Plain |
-| Revenue Contribution % | Plain |
-| Win Rate Trend Q1→Q4 | Sparkline |
-
-**Product Quadrant Results:**
-| Category | Products |
-|----------|---------|
-| ⭐ Star | GTXPro, GTX Plus Pro |
-| 💎 Opportunity | MG Special |
-| 🔴 Risk | MG Advanced |
-| ⚠️ Weak | GTX Plus Basic, GTK 500 |
-
-**Key Insight:**
-- MG Special: Highest Win Rate (64.8%) but only 0.4% revenue contribution (price = $55)
-- GTK 500: Highest price ($26,768) but lowest Win Rate (60%) and only 25 deals
-
----
-
-### Page 6 — Account Intelligence
-
-**Business Question:** Which accounts and sectors generate the most value — and where are the hidden opportunities?
-
-**Audience:** Account Manager, Sales Director
-
-**Filters:** Region | Sector | Account | Deal Stage
-
-**Visuals:**
-
-| Visual | Type | Details | Key Insight |
-|--------|------|---------|-------------|
-| Account & Sector Matrix | Scatter Plot | X: Revenue, Y: Win Rate%, Size: Deals, Legend: Sector, Details: Account | Hierarchy view |
-| Global Account Map | Map Visual | Location: office_location, Size: Revenue, Color: Win Rate% gradient | Geographic distribution |
-| Account Scorecard | Matrix | See columns below | Full detail |
-
-**Map Tooltip:**
-```
-Account | Sector | Win Rate % | Total Deals | Revenue Contribution | Employees
-```
-
-**Scatter Tooltip:**
-```
-Account | Sector | Total Revenue | Win Rate % | Revenue Contribution | Number of Accounts in Sector
-```
-
-**Matrix Columns:**
-| Column | Enhancement |
-|--------|-------------|
-| Account | Row label |
-| Account Category | ⭐💎🔴⚠️ |
-| Total Revenue | Data Bars |
-| Win Rate % | Font Color Scale |
-| Total Deals | Plain |
-| Sector | Plain |
-| Revenue Contribution % | Plain |
-| Employees | Data Bars |
-| Win Rate Trend Q1→Q4 | Sparkline |
-
-**Key Insight:**
-- Technology sector: Best balance between Revenue and Win Rate
-- Best performing category: ⭐ Star accounts
-
----
-
-## 🛠️ Technical Features
-
-| Feature | Implementation |
-|---------|---------------|
-| Star Schema | 4 Dim Tables → 1 Fact Table |
-| Drillthrough | Team Page → Agent Page (filtered by Manager) |
-| Dynamic Title | DAX — changes based on Drillthrough context |
-| Bookmarks | All Agents / Filter Panel show-hide |
-| Tooltip Pages | Custom report page tooltips per visual |
-| Sparklines | Revenue trend Q1→Q4 in Matrix visuals |
-| Avg Reference Lines | Win Rate & Revenue averages in Scatter plots |
-| Conditional Formatting | Data Bars, Color Scale, Icon Rules |
-| Time Intelligence | QoQ Growth using PREVIOUSQUARTER() |
-| Unknown Member | Null handling for 12% incomplete accounts |
-| Page Navigator | Custom navigation on all pages |
-
----
-
-## ⚠️ Removed / Deprecated Measures
-
-| Measure | Reason |
-|---------|--------|
-| `Average Revenue` | Duplicate of `Avg Revenue per Agent` |
-| `Avg Win Rate` | `Win Rate %` handles context automatically |
-| `Open Deals` | Duplicate of `Open Opportunities` |
-| `Average Sales Cycle Length` | Bug: returns DateTime not Days — use `Avg Close Time` instead |
-
-## 🔧 Fixed Measures
-
-| Measure | Issue | Fix |
-|---------|-------|-----|
-| `Agent Revenue Rank` | Used `sales_teams_dim[sales_agent]` | Changed to `ALL(sales_pipeline[sales_agent])` |
-| `Lost Rate %` | Missing `,0` in DIVIDE | Added zero-handling |
-| `Revenue Manager Contribution %` | Duplicated in model | Removed duplicate |
 
 ## 📁 Repository Structure
 
 ```
 CRM-Sales-Dashboard/
 │
-├── README.md                          ← This file
-├── CRM_Sales_Performance.pbix         ← Power BI file
+├── README.md
+├── CRM_Sales_Performance.pbix
 ├── data/
-│   ├── sales_pipeline.csv
-│   ├── accounts.csv
-│   ├── products.csv
-│   └── sales_teams.csv
 └── screenshots/
-    ├── 00_landing_page.png
-    ├── 01_executive_overview.png
-    ├── 02_team_performance.png
-    ├── 03_agent_performance.png
-    ├── 04_quarterly_trends.png
-    ├── 05_product_strategy.png
-    └── 06_account_intelligence.png
 ```
 
 ---
@@ -823,6 +244,3 @@ CRM-Sales-Dashboard/
 
 Built as a Portfolio Project | Power BI | DAX | Data Modeling
 
----
-
-*Data Source: Maven Analytics — CRM Sales Opportunities*
