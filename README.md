@@ -34,8 +34,8 @@ Built using Power BI on a clean Star Schema data model with 15+ custom DAX measu
 ---
 
 ## 📄 Full Documentation
-  👉 **Deep Dive Analysis Report:**  
-  [B2B Sales Pipeline Documentation](docs/b2b-sales-pipeline-documentation.pdf)
+####👉 **Deep Dive Analysis Report:**  
+####[B2B Sales Pipeline Documentation](docs/b2b-sales-pipeline-documentation.pdf)
 ---
 
 ## 🎯 Business Questions
