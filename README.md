@@ -22,6 +22,9 @@ Built using Power BI on a clean Star Schema data model with 15+ custom DAX measu
 
 ## 📸 Dashboard Preview
 
+👉 **View Dashboard Preview (PDF):**  
+[b2b-sales-dashboard-preview](docs/b2b-sales-dashboard-preview.pdf)
+
 | Landing Page | Sales Trends | Account Intelligence |
 |--------------|--------------|---------------------|
 | ![Landing](dashboard_screenshots/00_landing_overview.jpeg) | ![Trends](dashboard_screenshots/02_sales_trends_performance.jpeg) | ![Accounts](dashboard_screenshots/06_account_intelligence.jpeg) |
