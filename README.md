@@ -8,10 +8,9 @@ A business intelligence dashboard analyzing **8,800+ B2B sales opportunities** t
 
 Built using Power BI on a clean Star Schema data model with 15+ custom DAX measures, this project delivers a full 360° view of sales performance across teams, agents, products, and accounts.
 
-> **Data Source:** [Maven Analytics — CRM Sales Opportunities Dataset](https://mavenanalytics.io/data-playground/crm-sales-opportunities)
->> **Tool:** Power BI Desktop  
+> **Data Source:** [Maven Analytics — CRM Sales Opportunities Dataset](https://mavenanalytics.io/data-playground/crm-sales-opportunities)  
+> **Tool:** Power BI Desktop  
 > **Domain:** B2B Sales | CRM | Computer Hardware
-
 ---
 
 ## 🎥 Live Demo
